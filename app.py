@@ -9,7 +9,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.secret_key = "uma-chave-secreta"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
