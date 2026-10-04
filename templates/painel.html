@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Painel do Jogador</title>
+</head>
+
+<body>
+
+    <h1>Painel do Jogador</h1>
+
+    <p>
+        Bem-vindo, {{ usuario[0] }}!
+    </p>
+
+    {% if personagem %}
+
+        <h2>Seu personagem</h2>
+
+        <p>
+            <strong>Nome:</strong>
+            {{ personagem[1] }}
+        </p>
+
+        <br>
+
+        <a href="/ficha">
+            <button>
+                Abrir ficha
+            </button>
+        </a>
+
+        <br><br>
+
+        <form
+            action="/deletar-ficha"
+            method="POST"
+            onsubmit="return confirmarExclusao()"
+        >
+
+            <button type="submit">
+                Deletar ficha
+            </button>
+
+        </form>
+
+    {% else %}
+
+        <p>
+            Você ainda não criou um personagem.
+        </p>
+
+        <a href="/criar-ficha">
+            <button>
+                Criar ficha
+            </button>
+        </a>
+
+    {% endif %}
+
+    <br>
+
+    <a href="/logout">
+        <button>
+            Sair
+        </button>
+    </a>
+
+
+    <script>
+
+        function confirmarExclusao() {
+
+            return confirm(
+                "Tem certeza que deseja deletar sua ficha? Esta ação não pode ser desfeita."
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Criar ficha</title>
+</head>
+
+<body>
+
+    <h1>Criar ficha</h1>
+
+    <form action="/criar-ficha" method="POST">
+
+        <!-- ========================= -->
+        <!-- INFORMAÇÕES DO PERSONAGEM -->
+        <!-- ========================= -->
+
+        <h2>Personagem</h2>
+
+        <label>Nome:</label>
+        <input type="text" name="nome" required>
+
+        <br><br>
+
+        <label>Perfil:</label>
+
+        <select name="perfil" required>
+
+            {% for perfil in perfis %}
+                <option value="{{ perfil }}">
+                    {{ perfil }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+        <br><br>
+
+        <label>Ocupação:</label>
+
+        <select name="ocupacao" required>
+
+            {% for ocupacao in ocupacoes %}
+                <option value="{{ ocupacao }}">
+                    {{ ocupacao }}
+                </option>
+            {% endfor %}
+
+        </select>
+
+
+        <!-- ========================= -->
+        <!-- VANTAGEM DE CRIANÇA -->
+        <!-- ========================= -->
+
+        <h2>Vantagem de Criança</h2>
+
+        <p>
+            Escreva uma frase curta sobre seu personagem.
+            O Mestre irá definir a perícia relacionada.
+        </p>
+
+        <input
+            type="text"
+            name="vantagem_texto"
+            placeholder="Ex: Atencioso e gosta de bisbilhotar"
+            required
+        >
+
+
+        <!-- ========================= -->
+        <!-- PONTOS DE CRIAÇÃO -->
+        <!-- ========================= -->
+
+        <h2>Pontos de criação</h2>
+
+        <p>
+            Pontos restantes:
+            <strong id="pontos-restantes">12</strong>
+        </p>
+
+        <p id="status-ficha">
+            Ficha válida!
+        </p>
+
+
+        <!-- ========================= -->
+        <!-- ATRIBUTOS -->
+        <!-- ========================= -->
+
+        <h2>Atributos</h2>
+
+        <p>
+            Escolha o valor de cada atributo.
+        </p>
+
+        <label>Físico:</label>
+
+        <select
+            name="fisico"
+            id="fisico"
+            required
+            onchange="calcularPontos()"
+        >
+            <option value="d4">d4</option>
+            <option value="d6">d6</option>
+            <option value="d8">d8</option>
+            <option value="d10">d10</option>
+        </select>
+
+        <br><br>
+
+        <label>Mente:</label>
+
+        <select
+            name="mente"
+            id="mente"
+            required
+            onchange="calcularPontos()"
+        >
+            <option value="d4">d4</option>
+            <option value="d6">d6</option>
+            <option value="d8">d8</option>
+            <option value="d10">d10</option>
+        </select>
+
+        <br><br>
+
+        <label>Emoção:</label>
+
+        <select
+            name="emocao"
+            id="emocao"
+            required
+            onchange="calcularPontos()"
+        >
+            <option value="d4">d4</option>
+            <option value="d6">d6</option>
+            <option value="d8">d8</option>
+            <option value="d10">d10</option>
+        </select>
+
+
+        <!-- ========================= -->
+        <!-- PERÍCIAS -->
+        <!-- ========================= -->
+
+        <h2>Perícias</h2>
+
+        <p>
+            Distribua seus pontos entre as perícias.
+        </p>
+
+        {% for pericia in pericias %}
+
+            <label>{{ pericia }}:</label>
+
+            <input
+                type="number"
+                name="pericia_{{ pericia }}"
+                value="0"
+                min="0"
+                max="5"
+                onchange="calcularPontos()"
+            >
+
+            <br><br>
+
+        {% endfor %}
+
+
+        <!-- ========================= -->
+        <!-- ENVIAR -->
+        <!-- ========================= -->
+
+        <button type="submit">
+            Criar ficha
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/painel">
+        <button type="button">
+            Voltar
+        </button>
+    </a>
+
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+    <script>
+
+    function calcularPontos() {
+
+        let pontosUsados = 0;
+        let erros = [];
+
+
+        // =========================
+        // CUSTO DOS ATRIBUTOS
+        // =========================
+
+        const custos = {
+            "d4": 0,
+            "d6": 1,
+            "d8": 2,
+            "d10": 6
+        };
+
+
+        // =========================
+        // PEGAR ATRIBUTOS
+        // =========================
+
+        const fisico = document.getElementById("fisico").value;
+        const mente = document.getElementById("mente").value;
+        const emocao = document.getElementById("emocao").value;
+
+
+        // =========================
+        // SOMAR ATRIBUTOS
+        // =========================
+
+        pontosUsados += custos[fisico];
+        pontosUsados += custos[mente];
+        pontosUsados += custos[emocao];
+
+
+        // =========================
+        // VERIFICAR ATRIBUTOS ALTOS
+        // =========================
+
+        let atributosAltos = 0;
+
+        if (fisico === "d8" || fisico === "d10") {
+            atributosAltos++;
+        }
+
+        if (mente === "d8" || mente === "d10") {
+            atributosAltos++;
+        }
+
+        if (emocao === "d8" || emocao === "d10") {
+            atributosAltos++;
+        }
+
+        if (atributosAltos > 1) {
+
+            erros.push(
+                "Apenas um atributo pode ser d8 ou d10."
+            );
+
+        }
+
+
+        // =========================
+        // PEGAR PERÍCIAS
+        // =========================
+
+        const pericias = document.querySelectorAll(
+            'input[name^="pericia_"]'
+        );
+
+
+        // =========================
+        // SOMAR PERÍCIAS
+        // =========================
+
+        pericias.forEach(function(pericia) {
+
+            pontosUsados += Number(pericia.value);
+
+        });
+
+
+        // =========================
+        // CALCULAR PONTOS RESTANTES
+        // =========================
+
+        const pontosRestantes = 12 - pontosUsados;
+
+        document.getElementById("pontos-restantes").textContent =
+            pontosRestantes;
+
+
+        // =========================
+        // VERIFICAR LIMITE DE PONTOS
+        // =========================
+
+        if (pontosRestantes < 0) {
+
+            erros.push(
+                "Você ultrapassou os 12 pontos disponíveis."
+            );
+
+        }
+
+
+        // =========================
+        // MOSTRAR STATUS
+        // =========================
+
+        const status = document.getElementById("status-ficha");
+
+        if (erros.length === 0) {
+
+            status.textContent = "Ficha válida!";
+
+        } else {
+
+            status.innerHTML = "";
+
+            erros.forEach(function(erro) {
+
+                const mensagem = document.createElement("p");
+
+                mensagem.textContent = "⚠️ " + erro;
+
+                status.appendChild(mensagem);
+
+            });
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

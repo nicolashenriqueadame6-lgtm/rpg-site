@@ -1,0 +1,113 @@
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Painel do Mestre</title>
+    </head>
+
+    <body>
+
+        <h1>Painel do Mestre</h1>
+
+        <h2>Personagens</h2>
+
+        {% if personagens %}
+
+            {% for personagem in personagens %}
+
+                <div>
+
+                    <h3>
+                        <a href="/ficha-mestre/{{ personagem[0] }}">
+                            {{ personagem[1] }}
+                        </a>
+                    </h3>
+
+                    <p>
+                        Jogador: {{ personagem[6] }}
+                    </p>
+
+                    <p>
+                        Perfil: {{ personagem[2] }}
+                    </p>
+
+                    <p>
+                        Ocupação: {{ personagem[3] }}
+                    </p>
+
+
+                    <!-- ========================= -->
+                    <!-- PV -->
+                    <!-- ========================= -->
+
+                    <p>
+                        PV: {{ personagem[4] }} / {{ personagem[5] }}
+                    </p>
+
+                    <form
+                        action="/editar-pv/{{ personagem[0] }}"
+                        method="POST"
+                    >
+
+                        <input
+                            type="number"
+                            name="pv_atual"
+                            value="{{ personagem[4] }}"
+                            min="0"
+                            max="{{ personagem[5] }}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="origem"
+                            value="painel"
+                        >
+
+                        <button type="submit">
+                            Alterar PV
+                        </button>
+
+                    </form>
+
+
+                    <!-- ========================= -->
+                    <!-- HISTÓRICO -->
+                    <!-- ========================= -->
+
+                    <h4>Histórico</h4>
+
+                    {% for evento in historicos %}
+
+                        {% if evento[0] == personagem[0] %}
+
+                            <p>
+                                {{ evento[1] }}
+                            </p>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+
+                    <hr>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>Nenhum personagem criado ainda.</p>
+
+        {% endif %}
+
+
+        <br>
+
+        <a href="/logout-mestre">
+            <button>Sair do modo Mestre</button>
+        </a>
+
+    </body>
+
+    </html>

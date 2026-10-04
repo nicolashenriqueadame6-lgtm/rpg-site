@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>.................................................................................................................................................................................................................................................................................................................................................</title>
+
+    <style>
+        #imagem {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <img
+        id="imagem"
+        src="{{ url_for('static', filename='wdgaster.png') }}"
+    >
+
+    <audio id="audio">
+        <source
+            src="{{ url_for('static', filename='gaster.mp3') }}"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <script>
+        document.addEventListener("click", function() {
+
+            document.getElementById("imagem").style.display = "block";
+
+            document.getElementById("audio").play();
+
+        }, { once: true });
+    </script>
+
+</body>
+</html>

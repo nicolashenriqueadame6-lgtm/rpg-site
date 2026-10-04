@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ficha de {{ personagem[1] }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        .atributo {
+            margin-bottom: 15px;
+        }
+
+        .atributo button {
+            margin-left: 10px;
+            padding: 6px 12px;
+            font-size: 16px;
+        }
+
+        .pericia {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pericia button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #resultado-dado {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Ficha de {{ personagem[1] }}</h1>
+
+    <hr>
+
+    <h2>Informações</h2>
+
+    <p>
+        <strong>Perfil:</strong>
+        {{ personagem[2] }}
+    </p>
+
+    <p>
+        <strong>Ocupação:</strong>
+        {{ personagem[3] }}
+    </p>
+
+    <p>
+        <strong>Frase do personagem:</strong>
+        {{ personagem[4] }}
+    </p>
+
+    <p>
+        <strong>Vantagem da frase:</strong>
+        {{ personagem[5] }}
+    </p
+    
+    <hr>
+
+    <h2>Atributos</h2>
+
+    <div class="atributo">
+        <strong>Físico:</strong>
+
+        <button
+            type="button"
+            onclick="rolarAtributo('fisico')"
+        >
+            {{ personagem[6] }}
+        </button>
+    </div>
+
+    <div class="atributo">
+        <strong>Mente:</strong>
+
+        <button
+            type="button"
+            onclick="rolarAtributo('mente')"
+        >
+            {{ personagem[7] }}
+        </button>
+    </div>
+
+    <div class="atributo">
+        <strong>Emoção:</strong>
+
+        <button
+            type="button"
+            onclick="rolarAtributo('emocao')"
+        >
+            {{ personagem[8] }}
+        </button>
+    </div>
+
+    <hr>
+
+    <h2>Vida</h2>
+
+    <p>
+        <strong>PV:</strong>
+        {{ personagem[10] }} / {{ personagem[9] }}
+    </p>
+
+    <hr>
+
+    <h2>Perícias</h2>
+
+    {% for pericia in pericias %}
+
+        <div class="pericia">
+
+            <strong>
+                {{ pericia[1] }}
+            </strong>
+
+            <span>
+                Afinidade: +{{ pericia[2] }}
+            </span>
+
+            {% if personagem[3] in OCUPACOES and pericia[1] in OCUPACOES[personagem[3]] %}
+                <span>
+                    Ocupação: +1
+                </span>
+            {% endif %}
+
+            {% if personagem[5] == pericia[1] %}
+                <span>
+                    Vantagem: +1
+                </span>
+            {% endif %}
+
+            <button
+                type="button"
+                onclick="rolarPericia({{ pericia[0] }})"
+            >
+                Rolar
+            </button>
+
+        </div>
+
+    {% endfor %}
+
+    <h2>Resultado da rolagem</h2>
+
+    <p id="resultado-dado">
+        -
+    </p>
+
+    <hr>
+
+    <a href="/painel">
+        <button>Voltar para o painel</button>
+    </a>
+
+        <script>
+
+        async function rolarPericia(periciaId) {
+
+            const resposta = await fetch(
+                `/rolar-pericia/${periciaId}`
+            );
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+
+                document.getElementById("resultado-dado").textContent =
+                    dados.erro;
+
+                return;
+            }
+
+            document.getElementById("resultado-dado").textContent =
+                `${dados.pericia}: ${dados.dado} → ${dados.rolagem} + ${dados.bonus} + ${dados.bonus_vantagem} + ${dados.bonus_ocupacao} = ${dados.resultado}`;
+        }
+
+
+        async function rolarAtributo(atributo) {
+
+            const resposta = await fetch(
+                `/rolar-atributo/${atributo}`
+            );
+
+            const dados = await resposta.json();
+
+            if (dados.erro) {
+
+                document.getElementById("resultado-dado").textContent =
+                    dados.erro;
+
+                return;
+            }
+
+            document.getElementById("resultado-dado").textContent =
+                `${dados.atributo}: ${dados.dado} = ${dados.resultado}`;
+        }
+
+        </script>
+
+</body>
+</html>
